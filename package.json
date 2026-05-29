@@ -1,0 +1,33 @@
+{
+  "name": "vibereading",
+  "version": "1.0.0",
+  "description": "Funky tech tutor that teaches books chunk-by-chunk with analogies and force recall. No summaries, just vibes.",
+  "license": "MIT",
+  "keywords": [
+    "pi-package",
+    "pi-extension",
+    "pi-skill",
+    "vibereading",
+    "viberead",
+    "reading",
+    "tutor",
+    "tech-books",
+    "learning",
+    "socratic"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/navin-09/vibereading"
+  },
+  "pi": {
+    "extensions": ["./extensions/vibereading.ts"],
+    "skills": ["./skills"]
+  },
+  "files": [
+    "extensions/",
+    "skills/",
+    "scripts/",
+    "README.md",
+    "LICENSE"
+  ]
+}
