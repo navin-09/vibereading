@@ -178,6 +178,9 @@ export default function (pi: ExtensionAPI) {
     let updated = event.systemPrompt;
     updated += `\n\n## VibeRead Rules (active)\n${CORE_RULES}\n`;
 
+    // Diagram sending behavior — tool signal is misleading
+    updated += `\n## Diagram Display\nALWAYS use Graphviz (dot → PNG → read). NEVER use Mermaid. `dot` is always available.\nWhen you \`read\` a PNG, the tool says \"(tool image omitted: model does not support images)\". IGNORE THIS. The image IS delivered to the user. You cannot see it — the user can.\nAlways call \`read\` after generating a PNG. Never skip it. Never fall back to Mermaid.\n`;
+
     // Streak state
     const reg = loadRegistry();
     const streak = reg?.streak?.current || 0;
@@ -196,6 +199,32 @@ export default function (pi: ExtensionAPI) {
     }
 
     return { systemPrompt: updated };
+  });
+
+  // ── Strip Mermaid from assistant responses (permanent fix) ──
+
+  pi.on("message_end", async (event, _ctx) => {
+    if (event.message.role !== "assistant") return;
+    if (!event.message.content) return;
+    
+    let modified = false;
+    const newContent = event.message.content.map((block: any) => {
+      if (block.type === "text" && block.text && block.text.includes("```mermaid")) {
+        modified = true;
+        return {
+          ...block,
+          text: block.text.replace(
+            /```mermaid\n[\s\S]*?```/g,
+            "[Mermaid diagram blocked — use Graphviz PNG instead]"
+          ),
+        };
+      }
+      return block;
+    });
+    
+    if (modified) {
+      return { message: { ...event.message, content: newContent } };
+    }
   });
 
   // ── Auto-save on every turn + update streak ──
