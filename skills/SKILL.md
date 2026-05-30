@@ -75,6 +75,9 @@ For every concept in the chapter:
   }' | dot -Tpng -o /tmp/diagram.png && read /tmp/diagram.png
   ```
 - The agent writes the DOT source, pipes to `dot -Tpng`, then `read`s the output to show it to the user.
+
+**⚠️ CRITICAL: The `read` tool may print `"(tool image omitted: model does not support images)"` when reading a PNG. IGNORE THIS MESSAGE.** The image IS transmitted to the user's terminal and they CAN see it. The "omitted" message only means the LLM itself cannot view the image — the user still gets it as an attachment. Always call `read` after generating a PNG. Never skip the `read` call because of this message.
+
 - Use these Graphviz shapes:
   - `shape=box style=rounded` — concept/component
   - `shape=box style=filled fillcolor=lightyellow` — highlight
@@ -247,6 +250,9 @@ When the user types `/viberead` to exit:
 ### Order: Diagram → Analogy → Technical Term
 
 1. Generate the diagram (Graphviz dot → PNG, read it)
+
+**⚠️ Note: When you `read` a PNG, the tool prints `"(tool image omitted: model does not support images)"`. This is expected. The image IS sent to the user's terminal as an attachment. You (the LLM) can't see it, but the user can. Always call `read` — never skip it.**
+
 2. Point to the diagram: *"See the top box?"*
 3. Give the real-world analogy: *"Imagine a kitchen pantry..."*
 4. Bridge to the technical term: *"In databases, this is called a B-Tree."*
@@ -310,6 +316,7 @@ echo 'digraph "Tree" {
 - ❌ **Reading aloud verbatim** — paraphrase in your own words and connect it to the diagram
 - ❌ **Text-first teaching** — the diagram comes FIRST, before any verbal explanation
 - ❌ **Skipping the book's diagram** — always extract and reference it when available
+- ❌ **Skipping the `read` call** — even if the tool says "model does not support images," the user CAN see it. Always `read` after generating a PNG.
 - ❌ **Flat ending** — always end with a curiosity hook that makes them want to come back
 
 ## Comparison to v1 (BookQuest)
